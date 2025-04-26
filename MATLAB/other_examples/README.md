@@ -1,0 +1,1 @@
+This is a split zip archive set, as the original `.mat` file exceeds GitHub's 100 MB file size limit. To extract, use 7-Zip or other archiver, and extract the first file in list, `*.zip.001`.
