@@ -1,4 +1,32 @@
-function [lineset, fps, w, h, audio] = video2lineset(videoPath)
+function [lineset, fps, w, h, audio] = video2lineset(videoPath, addDetails)
+%%VIDEO2LINESET Convert a video file to a lineset for plotting
+%
+% [lineset, fps, w, h, audio] = video2lineset(videoPath, addDetails)
+%
+% Converts a video file to a lineset for plotting. The lineset is a cell
+% array of line points that can be plotted with line() or converted into a polygon with polyshape().
+%
+% Input:
+%   videoPath - Path to the video file to convert
+%   addDetails - Whether to do an extra edge detection pass to add more details to the lineset (Default: false)
+%
+% Output:
+%   lineset - Cell array of line points
+%   fps - Frames per second of the video
+%   w - Width of the video
+%   h - Height of the video
+%   audio - Struct containing audio data (y, fs) extracted from the video file
+%
+% Example:
+%   [lineset, fps, w, h, audio] = video2lineset('video.mp4');
+%   linesetPlayer(lineset, fps, w, h, audio);
+%
+% See also linesetPlayer, lineset2avi
+
+arguments
+    videoPath {mustBeFile}
+    addDetails (1,1) logical = false
+end
 
 video = VideoReader(fullfile(videoPath));
 [~, name, ext] = fileparts(videoPath);
@@ -25,15 +53,21 @@ while hasFrame(video)
         return
     end
     I = readFrame(video);
-    I = im2gray(I);
+    I = im2gray(I); % Add edge detection to capture more details
     BW = imbinarize(I);
+
+    if addDetails
+        edges = edge(I, 'Canny');
+        BW = BW | edges;
+    end
+
     BW = flip(BW)';
     [B,~] = bwboundaries(BW,'holes');
     poly = cell([length(B), 1]);
     for k = 1:length(B)
         po = B{k};
         try
-            [x, y] = reducem(po(:,1), po(:,2));
+            [x, y] = reducem(po(:,1), po(:,2)); % Reduce points to reduce plotting time
         catch
             x = po(:,1); y = po(:,2);
         end
