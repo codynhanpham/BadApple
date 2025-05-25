@@ -53,11 +53,11 @@ while hasFrame(video)
         return
     end
     I = readFrame(video);
-    I = im2gray(I); % Add edge detection to capture more details
+    I = im2gray(I);
     BW = imbinarize(I);
 
     if addDetails
-        edges = edge(I, 'Canny');
+        edges = edge(I, 'Canny'); % Add edge detection to capture more details
         BW = BW | edges;
     end
 
