@@ -14,6 +14,7 @@ function linesetPlayer(linesetData, fps, w, h, audioInfo, kvargs)
 %   Name, Value - Name/value pairs for additional options
 %       BackgroundColor - Color of the background (Default: [0.97, 0.97, 0.97])
 %       LineColor - Color of the lines (Default: [0, 0, 0])
+%       AxisColor - Color of the axis (Default: [0, 0, 0])
 %       LineWidth - Width of the lines (Default: 1)
 %       Debug - Whether to print debug information (Default: false)
 %       LineColorSequence - Cell array of cell arrays of {framestart, frameend, colorHex} to override LineColor
@@ -35,6 +36,7 @@ arguments
 
     kvargs.BackgroundColor {validatecolor} = [0.97, 0.97, 0.97]
     kvargs.LineColor {validatecolor} = [0, 0, 0]
+    kvargs.AxisColor {validatecolor} = [0, 0, 0]
     kvargs.LineWidth (1,1) double {mustBePositive} = 1
     kvargs.Debug (1,1) logical = false
 
@@ -95,6 +97,7 @@ end
 f = figure('Position', [round((ss(3)-window_w)/2), round((ss(4)-window_h)/2), window_w, window_h], 'Color', kvargs.BackgroundColor);
 a = axes(f, 'XLim', [0, w], 'YLim', [0, h], 'Box', 'on', ...
     'NextPlot', 'replacechildren', 'Interactions', [], 'Color', kvargs.BackgroundColor);
+a.XColor = kvargs.AxisColor; a.YColor = kvargs.AxisColor;
 a.Toolbar.Visible = 'off';
 axis(a,'equal');
 numFrames = length(linesetData);

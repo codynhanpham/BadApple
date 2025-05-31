@@ -1,7 +1,7 @@
 function lineset2avi(outputPath, linesetData, fps, w, h, audioInfo, kvargs)
 %%LINESET2AVI Convert a lineset to an AVI file
 %
-% lineset2avi(linesetData, fps, targetWidth, audioInfo, Name, Value, ...)
+% lineset2avi(outputPath, linesetData, fps, w, h, audioInfo, Name, Value, ...)
 %
 % Inputs:
 %   outputPath - Path to the output AVI file
@@ -15,6 +15,7 @@ function lineset2avi(outputPath, linesetData, fps, w, h, audioInfo, kvargs)
 %   Name, Value - Name/value pairs for additional options
 %       BackgroundColor - Color of the background (Default: [0.97, 0.97, 0.97])
 %       LineColor - Color of the lines (Default: [0, 0, 0])
+%       AxisColor - Color of the axis (Default: [0, 0, 0])
 %       LineWidth - Width of the lines (Default: 1)
 %       TargetWidth - Width of the output video (Default: 1920). The height will be calculated based on the aspect ratio of the lineset.
 %       LineColorSequence - Cell array of cell arrays of {framestart, frameend, colorHex} to override LineColor
@@ -24,6 +25,13 @@ function lineset2avi(outputPath, linesetData, fps, w, h, audioInfo, kvargs)
 % Example:
 %   linesetData = video2lineset('video.mp4');
 %   lineset2avi(linesetData, fps, targetWidth, audioInfo, 'TargetWidth', 2560);
+%
+% If there is some audioInfo associated, it will be saved to 'audio.wav' in
+% the same directory as the selected outputPath for the video. You can then
+% combine the video and audio, as well as convert the output to a different
+% format (.mp4, .mkv, etc.) using the FFmpeg command similar to:
+%
+%   ffmpeg -i "./video.avi" -i "./audio.wav" -pix_fmt yuvj420p -preset:v slow -b:v 10M -c:a aac -b:a 320k "./final_output.mp4"
 %
 % See also linesetPlayer, video2lineset
 
@@ -38,6 +46,7 @@ arguments
     kvargs.DPI (1,1) double {mustBePositive} = 300
     kvargs.BackgroundColor {validatecolor} = [0.97, 0.97, 0.97]
     kvargs.LineColor {validatecolor} = [0, 0, 0]
+    kvargs.AxisColor {validatecolor} = [0, 0, 0]
     kvargs.LineWidth (1,1) double {mustBePositive} = 1
     kvargs.TargetWidth (1,1) double {mustBeInteger, mustBePositive} = 1920
 
@@ -110,6 +119,7 @@ h_inches = targetHeight / kvargs.DPI;
 f = figure('Position', [round((ss(3)-w)/2), round((ss(4)-h)/2), w, h], 'Color', kvargs.BackgroundColor, 'PaperSize', [w_inches, h_inches], 'PaperPositionMode', 'auto', 'InvertHardcopy', 'off');
 a = axes(f, 'XLim', [0, w], 'YLim', [0, h], 'Box', 'on', ...
     'NextPlot', 'replacechildren', 'Interactions', [], 'Color', kvargs.BackgroundColor);
+a.XColor = kvargs.AxisColor; a.YColor = kvargs.AxisColor;
 a.Toolbar.Visible = 'off';
 axis(a,'equal', 'tight');
 
